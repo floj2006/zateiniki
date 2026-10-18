@@ -18,10 +18,10 @@ const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matc
    ========================================================= */
 
 const icons = {
-  mask: '<svg viewBox="0 0 100 100" class="dir-card__icon"><path d="M10 30c25-10 55-10 80 0 0 30-12 52-40 58C22 82 10 60 10 30z" fill="#14112B"/><circle cx="35" cy="45" r="8" fill="#FFF6E9"/><circle cx="65" cy="45" r="8" fill="#FFF6E9"/><path d="M36 64c8 8 20 8 28 0" stroke="#FFF6E9" stroke-width="5" fill="none" stroke-linecap="round"/></svg>',
-  house: '<svg viewBox="0 0 100 100" class="dir-card__icon"><path d="M12 48L50 14l38 34v38H12z" fill="#FFF6E9"/><rect x="40" y="58" width="20" height="28" rx="3" fill="#14112B"/><circle cx="50" cy="38" r="7" fill="#FFC531"/></svg>',
-  key: '<svg viewBox="0 0 100 100" class="dir-card__icon"><circle cx="34" cy="50" r="22" fill="none" stroke="#14112B" stroke-width="10"/><path d="M54 50h36M76 50v14M88 50v10" stroke="#14112B" stroke-width="10" stroke-linecap="round"/></svg>',
-  gift: '<svg viewBox="0 0 100 100" class="dir-card__icon"><rect x="14" y="42" width="72" height="46" rx="6" fill="#FF5A3C"/><rect x="8" y="30" width="84" height="16" rx="5" fill="#14112B"/><rect x="44" y="30" width="12" height="58" fill="#FFF6E9"/><path d="M50 30c-10-20-30-14-22 0M50 30c10-20 30-14 22 0" fill="none" stroke="#14112B" stroke-width="6" stroke-linecap="round"/></svg>',
+  mask: '<svg viewBox="0 0 100 100" class="dir-card__icon"><path d="M10 30c25-10 55-10 80 0 0 30-12 52-40 58C22 82 10 60 10 30z" fill="#111111"/><circle cx="35" cy="45" r="8" fill="#FFF6E9"/><circle cx="65" cy="45" r="8" fill="#FFF6E9"/><path d="M36 64c8 8 20 8 28 0" stroke="#FFF6E9" stroke-width="5" fill="none" stroke-linecap="round"/></svg>',
+  house: '<svg viewBox="0 0 100 100" class="dir-card__icon"><path d="M12 48L50 14l38 34v38H12z" fill="#FFF6E9"/><rect x="40" y="58" width="20" height="28" rx="3" fill="#111111"/><circle cx="50" cy="38" r="7" fill="#E2B23A"/></svg>',
+  key: '<svg viewBox="0 0 100 100" class="dir-card__icon"><circle cx="34" cy="50" r="22" fill="none" stroke="#111111" stroke-width="10"/><path d="M54 50h36M76 50v14M88 50v10" stroke="#111111" stroke-width="10" stroke-linecap="round"/></svg>',
+  gift: '<svg viewBox="0 0 100 100" class="dir-card__icon"><rect x="14" y="42" width="72" height="46" rx="6" fill="#FF6A00"/><rect x="8" y="30" width="84" height="16" rx="5" fill="#111111"/><rect x="44" y="30" width="12" height="58" fill="#FFF6E9"/><path d="M50 30c-10-20-30-14-22 0M50 30c10-20 30-14 22 0" fill="none" stroke="#111111" stroke-width="6" stroke-linecap="round"/></svg>',
 }
 
 function renderDirections() {
@@ -551,7 +551,7 @@ function faqBlock() {
 
 function finalBlock() {
   const box = $('.final__confetti')
-  const colors = ['#FFC531', '#2ED3A4', '#7B5CFF', '#FFF6E9', '#14112B']
+  const colors = ['#E2B23A', '#9ADE3A', '#1C1C1C', '#FFF6E9', '#111111']
   for (let i = 0; i < 26; i++) {
     const el = document.createElement('i')
     el.style.left = Math.random() * 100 + '%'
@@ -609,7 +609,7 @@ function confettiBurst(x = innerWidth / 2, y = innerHeight / 2) {
   canvas.width = innerWidth * dpr
   canvas.height = innerHeight * dpr
   ctx.scale(dpr, dpr)
-  const colors = ['#FF5A3C', '#FFC531', '#2ED3A4', '#7B5CFF', '#14112B']
+  const colors = ['#FF6A00', '#E2B23A', '#9ADE3A', '#1C1C1C', '#111111']
   const parts = Array.from({ length: 160 }, () => ({
     x, y,
     vx: gsap.utils.random(-12, 12),
