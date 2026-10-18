@@ -3,7 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 import { Flip } from 'gsap/Flip'
 import Lenis from 'lenis'
-import { brand, directions, programs, calc, steps, stats, reviews, faq } from './data.js'
+import { brand, directions, moreLinks, venues, programs, calc, steps, stats, gallery, faq } from './data.js'
 
 gsap.registerPlugin(ScrollTrigger, SplitText, Flip)
 
@@ -28,8 +28,8 @@ function renderDirections() {
   $('[data-directions]').innerHTML = directions.map((d, i) => `
     <article class="dir-card" data-color="${d.color}">
       <span class="dir-card__bg"></span>
+      <div class="dir-card__photo"><img src="${d.photo}" alt="${d.title}" loading="lazy" />${icons[d.icon]}</div>
       <span class="dir-card__num">0${i + 1} / 0${directions.length}</span>
-      ${icons[d.icon]}
       <span class="dir-card__tag">${d.tag}</span>
       <h3>${d.title}</h3>
       <p>${d.text}</p>
@@ -38,16 +38,18 @@ function renderDirections() {
     </article>`).join('')
 }
 
+const ageLabel = (p) => (p.group === 'adult' ? '18+' : p.group === 'surprise' ? 'для всех' : `${p.age[0]}+`)
+
 function renderPrograms() {
   $('[data-programs]').innerHTML = programs.map((p, i) => `
-    <article class="prog" data-color="${p.color}" data-min="${p.age[0]}" data-max="${p.age[1]}">
+    <article class="prog" data-color="${p.color}" data-group="${p.group}">
       <div class="prog__emoji" aria-hidden="true">${p.emoji}</div>
-      <span class="prog__kind">${p.kind}</span>
+      <span class="prog__kind">${p.kind} · ${venues[p.venue]}</span>
       <h3>${p.title}</h3>
       <p>${p.text}</p>
       <div class="prog__meta">
-        <span>${p.age[0]}–${p.age[1]} лет · ${p.minutes} мин</span>
-        <span class="prog__price">от ${rub(p.price)} ₽</span>
+        <span>${ageLabel(p)}</span>
+        <span class="prog__price">${p.group === 'surprise' ? 'от ' : ''}${rub(p.price)} ₽</span>
       </div>
       <button class="prog__pick" data-pick="${i}">Выбрать →</button>
     </article>`).join('')
@@ -60,10 +62,13 @@ function renderStatic() {
     ;(span || a).textContent = brand.phone
   })
   $$('[data-vk-write]').forEach((a) => (a.href = brand.vkWrite))
-  $('[data-address]').textContent = brand.address
+  $('[data-venues]').innerHTML = brand.venues.map((v) => `<b>${v.name}</b><small>${v.address}</small>`).join('')
+  $('[data-managers]').innerHTML =
+    `<a href="${brand.phoneHref}"><b>${brand.phoneFull}</b></a>` +
+    brand.managers.map((m) => `<a href="${m.href}"><b>${m.phone}</b> <small>${m.name}</small></a>`).join('')
   $('[data-hours]').textContent = brand.hours
   $('[data-year]').textContent = new Date().getFullYear()
-  $('[data-vk-links]').innerHTML = directions.map((d) => `<a href="${d.vk}" target="_blank" rel="noopener">${d.title}</a>`).join('')
+  $('[data-vk-links]').innerHTML = [...directions, ...moreLinks].map((d) => `<a href="${d.vk}" target="_blank" rel="noopener">${d.title}</a>`).join('')
 
   $('[data-steps]').innerHTML = steps.map((s, i) => `
     <li><div class="how__num">${i + 1}</div><h3>${s.title}</h3><p>${s.text}</p></li>`).join('')
@@ -71,14 +76,10 @@ function renderStatic() {
   $('[data-stats]').innerHTML = stats.map((s) => `
     <div class="stat"><b data-count="${s.value}" data-suffix="${s.suffix}">0${s.suffix}</b><span>${s.label}</span></div>`).join('')
 
-  // отзывы дублируем, чтобы лента была бесконечной
-  const card = (r) => `
-    <blockquote class="review">
-      <div class="review__stars" aria-label="5 из 5">★★★★★</div>
-      <p>${r.text}</p>
-      <footer><span class="review__ava">${r.name[0]}</span><span>${r.name}<small>${r.occasion}</small></span></footer>
-    </blockquote>`
-  $('[data-reviews]').innerHTML = [...reviews, ...reviews].map(card).join('')
+  // фото дублируем, чтобы лента была бесконечной
+  const card = (g) => `
+    <figure class="shot"><img src="${g.src}" alt="${g.caption}" loading="lazy" draggable="false" /><figcaption>${g.caption}</figcaption></figure>`
+  $('[data-gallery]').innerHTML = [...gallery, ...gallery].map(card).join('')
 
   $('[data-faq]').innerHTML = faq.map((f, i) => `
     <div class="faq__item">
@@ -158,6 +159,7 @@ function intro() {
     .from('.hero__eyebrow', { y: 20, opacity: 0, duration: 0.8 }, 0.1)
     .from('.hero__lead, .hero__cta > *, .hero__badges li', { y: 30, opacity: 0, duration: 1, stagger: 0.07 }, 0.45)
     .from('.shape', { scale: 0, rotate: -40, duration: 1.4, stagger: 0.06, ease: 'elastic.out(1, .6)' }, 0.2)
+    .from('.polaroid', { yPercent: 120, opacity: 0, duration: 1.2, stagger: 0.12, ease: 'expo.out' }, 0.35)
     .from('.header', { y: -80, opacity: 0, duration: 1, clearProps: 'transform,opacity' }, 0.3)
   return tl
 }
@@ -213,11 +215,14 @@ function heroRotator() {
 }
 
 function heroShapes() {
+  // наклон фотокарточек задаётся в data-rot
+  $$('.polaroid').forEach((p) => gsap.set(p, { rotation: +p.dataset.rot }))
   if (reduced) return
-  const shapes = $$('.shape')
+  const shapes = $$('.shape, .polaroid')
   // лёгкое «дыхание»
   shapes.forEach((s, i) => {
-    gsap.to(s, { y: '+=18', rotate: i % 2 ? 6 : -6, duration: 2.4 + i * 0.3, yoyo: true, repeat: -1, ease: 'sine.inOut' })
+    const rot = +(s.dataset.rot || 0)
+    gsap.to(s, { y: '+=18', rotation: rot + (i % 2 ? 6 : -6), duration: 2.4 + i * 0.3, yoyo: true, repeat: -1, ease: 'sine.inOut' })
   })
   // параллакс от мыши
   if (finePointer) {
@@ -234,7 +239,7 @@ function heroShapes() {
     })
   }
   // разлёт при скролле
-  gsap.to('.hero__shapes', {
+  gsap.to('.hero__shapes, .hero__photos', {
     yPercent: 30, opacity: 0.2, ease: 'none',
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
   })
@@ -322,8 +327,6 @@ function directionsScroll() {
    9. Программы — фильтр (Flip), 3D-наклон, «Выбрать»
    ========================================================= */
 
-const ageRanges = { all: [0, 99], 3: [3, 5], 6: [6, 9], 10: [10, 14], 14: [14, 99] }
-
 function programsBlock() {
   const cards = $$('.prog')
   if (!reduced) {
@@ -338,12 +341,9 @@ function programsBlock() {
     const chip = e.target.closest('.chip')
     if (!chip) return
     $$('.chip').forEach((c) => c.classList.toggle('is-active', c === chip))
-    const [lo, hi] = ageRanges[chip.dataset.age]
+    const group = chip.dataset.group
     const state = Flip.getState(cards)
-    cards.forEach((c) => {
-      const show = +c.dataset.min <= hi && +c.dataset.max >= lo
-      c.classList.toggle('is-hidden', !show)
-    })
+    cards.forEach((c) => c.classList.toggle('is-hidden', group !== 'all' && c.dataset.group !== group))
     Flip.from(state, {
       duration: reduced ? 0 : 0.6, ease: 'power3.inOut', stagger: 0.03, absolute: true,
       onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5 }),
@@ -370,12 +370,7 @@ function programsBlock() {
   $('[data-programs]').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-pick]')
     if (!btn) return
-    const program = programs[btn.dataset.pick]
-    $(`#prog-${btn.dataset.pick}`).checked = true
-    // если текущий возраст не подходит программе — ставим минимальный подходящий
-    const ageInput = $('[data-age-in]')
-    if (+ageInput.value < program.age[0] || +ageInput.value > program.age[1]) setRange(ageInput, program.age[0])
-    updateBuilder()
+    pickProgram(+btn.dataset.pick)
     scrollToTarget('#builder')
   })
 }
@@ -396,14 +391,60 @@ function opt(type, name, id, label, hint, checked) {
   </div>`
 }
 
+// выбранная программа из каталога (индекс в programs)
+let pickedProgram = null
+
 function renderBuilder() {
-  $('[data-occasions]').innerHTML = calc.occasions.map((o, i) => opt('radio', 'occasion', `occ-${i}`, o, '', i === 0)).join('')
-  $('[data-program-select]').innerHTML =
-    programs.map((p, i) => opt('radio', 'program', `prog-${i}`, `${p.emoji} ${p.title}`, `${p.age[0]}–${p.age[1]} лет · ${rub(p.price)} ₽`, i === 0)).join('') +
-    opt('radio', 'program', 'prog-none', 'Без программы', 'только площадка / сюрприз', false)
-  $('[data-places]').innerHTML = calc.places.map((p, i) => opt('radio', 'place', `place-${p.id}`, p.label, p.hint, i === 0)).join('')
-  $('[data-extras]').innerHTML = calc.extras.map((x) => opt('checkbox', 'extra', `extra-${x.id}`, x.label, `+${rub(x.price)} ₽`, false)).join('')
+  $('[data-occasions]').innerHTML = calc.occasions.map((o, i) => opt('radio', 'occasion', `occ-${o.id}`, o.label, '', i === 0)).join('')
+  $('[data-extras]').innerHTML = calc.extras.map((x) => opt('checkbox', 'extra', `extra-${x.id}`, x.label, `+${x.from ? 'от ' : ''}${rub(x.price)} ₽`, false)).join('')
+  renderFormats()
 }
+
+function renderFormats(formatId) {
+  const occ = $('input[name="occasion"]:checked').value.replace('occ-', '')
+  const list = calc.formats.filter((f) => f.occ === occ)
+  const current = list.find((f) => f.id === formatId) || list[0]
+  $('[data-formats]').innerHTML = list.map((f) => opt('radio', 'format', `fmt-${f.id}`, f.label, f.hint, f === current)).join('')
+  renderProgramOptions()
+}
+
+function currentFormat() {
+  const id = $('input[name="format"]:checked').value.replace('fmt-', '')
+  return calc.formats.find((f) => f.id === id)
+}
+
+function renderProgramOptions() {
+  const fmt = currentFormat()
+  const step = $('[data-program-step]')
+  step.hidden = !fmt.venue
+  if (!fmt.venue) return
+  const groups = fmt.groups || ['kids', 'teen']
+  const list = programs.map((p, i) => ({ p, i })).filter(({ p }) => p.venue === fmt.venue && groups.includes(p.group))
+  const age = +$('[data-age-in]').value
+  const keep = list.find(({ i }) => i === pickedProgram) || list.find(({ p }) => age >= p.age[0] && age <= p.age[1]) || list[0]
+  $('[data-program-select]').innerHTML = list
+    .map(({ p, i }) => opt('radio', 'program', `prog-${i}`, `${p.emoji} ${p.title}`, `${ageLabel(p)} · ${rub(p.price)} ₽`, i === keep.i))
+    .join('')
+}
+
+// выбор программы из каталога: подставляем повод, формат и программу
+function pickProgram(i) {
+  const p = programs[i]
+  pickedProgram = i
+  const occ = p.group === 'adult' ? 'adult' : p.group === 'surprise' ? 'surprise' : 'bday'
+  $(`#occ-${occ}`).checked = true
+  const fmt = p.venue === 'out' ? (p.price > 3500 ? 'statues' : 'doll') : occ === 'adult' ? 'adult-loft' : p.venue
+  renderFormats(fmt)
+  const ageInput = $('[data-age-in]')
+  if (p.group !== 'surprise' && (+ageInput.value < p.age[0] || +ageInput.value > p.age[1])) setRange(ageInput, Math.min(p.age[0], 16))
+  updateBuilder()
+}
+
+builder.addEventListener('change', (e) => {
+  if (e.target.name === 'occasion') renderFormats()
+  if (e.target.name === 'format') renderProgramOptions()
+  if (e.target.name === 'program') pickedProgram = +e.target.value.replace('prog-', '')
+})
 
 function setRange(input, value) {
   input.value = value
@@ -420,23 +461,22 @@ function updateBuilder() {
   $('[data-age-out]').textContent = age
   $('[data-guests-out]').textContent = guests
 
-  const occasion = calc.occasions[+$('input[name="occasion"]:checked').id.split('-')[1]]
-  const progId = $('input[name="program"]:checked').id
-  const program = progId === 'prog-none' ? null : programs[+progId.split('-')[1]]
-  const place = calc.places.find((p) => `place-${p.id}` === $('input[name="place"]:checked').id)
+  const occasion = calc.occasions.find((o) => `occ-${o.id}` === $('input[name="occasion"]:checked').value)
+  const fmt = currentFormat()
+  const progInput = fmt.venue ? $('input[name="program"]:checked') : null
+  const program = progInput ? programs[+progInput.value.replace('prog-', '')] : null
   const extras = calc.extras.filter((x) => $(`#extra-${x.id}`).checked)
 
   const rows = []
-  if (program) rows.push([`${program.title}, ${program.minutes} мин`, program.price])
-  if (place.price) rows.push([`Площадка: ${place.label.replace('В ', '')}`, place.price])
-  const extraGuests = Math.max(0, guests - calc.baseGuests)
-  if (program && extraGuests) rows.push([`Доп. гости: ${extraGuests}`, extraGuests * calc.perExtraGuest])
+  if (program) rows.push([`${program.title} · ${venues[program.venue]}`, program.price])
+  else if (fmt.perPerson) rows.push([`${fmt.label}: ${guests} × ${rub(fmt.perPerson)} ₽`, fmt.perPerson * guests])
+  else if (fmt.price) rows.push([fmt.label, fmt.price])
   extras.forEach((x) => rows.push([x.label, x.price]))
 
   const total = rows.reduce((s, r) => s + r[1], 0)
   $('[data-summary]').innerHTML =
-    `<li><span>${occasion}, ${age} лет</span><span>${guests} гостей</span></li>` +
-    (rows.length ? rows.map(([l, p]) => `<li><span>${l}</span><span>${rub(p)} ₽</span></li>`).join('') : '<li><span>Выберите программу или допы</span><span></span></li>')
+    `<li><span>${occasion.label}${occasion.id === 'adult' || occasion.id === 'surprise' ? '' : `, ${age} лет`}</span><span>${guests} гостей</span></li>` +
+    rows.map(([l, p]) => `<li><span>${l}</span><span>${rub(p)} ₽</span></li>`).join('')
 
   gsap.to(totalTween, {
     v: total, duration: reduced ? 0 : 0.8, ease: 'power3.out',
@@ -444,19 +484,19 @@ function updateBuilder() {
   })
   if (!reduced) gsap.fromTo('.summary__total strong', { scale: 1.08 }, { scale: 1, duration: 0.5, ease: 'back.out(3)' })
 
-  // подсказка по возрасту: подсвечиваем подходящие программы
-  programs.forEach((p, i) => {
-    const label = $(`label[for="prog-${i}"]`)
-    label.style.opacity = age >= p.age[0] && age <= p.age[1] ? 1 : 0.45
+  // подсказка по возрасту: приглушаем неподходящие программы
+  $$('input[name="program"]').forEach((input) => {
+    const p = programs[+input.value.replace('prog-', '')]
+    $(`label[for="${input.id}"]`).style.opacity = p.group === 'adult' || (age >= p.age[0] && age <= p.age[1]) ? 1 : 0.45
   })
 
   lastSummary = [
-    `Повод: ${occasion}`,
+    `Повод: ${occasion.label}`,
+    `Формат: ${fmt.label}`,
     `Возраст: ${age} лет, гостей: ${guests}`,
-    `Программа: ${program ? program.title : 'без программы'}`,
-    `Место: ${place.label}`,
+    program ? `Программа: ${program.title}` : '',
     extras.length ? `Допы: ${extras.map((x) => x.label).join(', ')}` : '',
-    `Предварительно: от ${rub(total)} ₽`,
+    `Предварительно: ${rub(total)} ₽`,
   ].filter(Boolean).join('\n')
 }
 
@@ -465,11 +505,12 @@ $$('input[type="range"]', builder).forEach((r) => {
   paintRange(r)
   r.addEventListener('input', () => { paintRange(r); updateBuilder() })
 })
+// обработчик выше перерисовывает шаги, этот — пересчитывает итог
 builder.addEventListener('change', updateBuilder)
 updateBuilder()
 
 /* =========================================================
-   11. Как это работает, цифры, отзывы, FAQ
+   11. Как это работает, цифры, галерея, FAQ
    ========================================================= */
 
 function howLine() {
@@ -502,8 +543,8 @@ function counters() {
   })
 }
 
-function reviewsRail() {
-  const rail = $('[data-reviews]')
+function galleryRail() {
+  const rail = $('[data-gallery]')
   const half = () => rail.scrollWidth / 2
   let x = 0
   let drag = null
@@ -741,16 +782,16 @@ directionsScroll()
 programsBlock()
 howLine()
 counters()
-reviewsRail()
+galleryRail()
 faqBlock()
 finalBlock()
 cursorAndMagnets()
 
 // hero анимируем только после прелоадера; до этого прячем его
-gsap.set('.hero__inner, .hero__shapes', { visibility: 'hidden' })
+gsap.set('.hero__inner, .hero__shapes, .hero__photos', { visibility: 'hidden' })
 document.fonts.ready.then(() =>
   runPreloader().then(() => {
-    gsap.set('.hero__inner, .hero__shapes', { visibility: 'visible' })
+    gsap.set('.hero__inner, .hero__shapes, .hero__photos', { visibility: 'visible' })
     if (!reduced) intro()
     ScrollTrigger.refresh()
   }),

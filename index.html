@@ -35,7 +35,7 @@
       <a href="#directions">Направления</a>
       <a href="#programs">Программы</a>
       <a href="#builder">Конструктор</a>
-      <a href="#reviews">Отзывы</a>
+      <a href="#gallery">Фото</a>
       <a href="#contacts">Контакты</a>
     </nav>
     <a class="header__phone" data-phone></a>
@@ -56,22 +56,29 @@
         <svg class="shape shape--gift" data-depth="0.8" viewBox="0 0 100 100"><rect x="12" y="40" width="76" height="52" rx="6" fill="#9ADE3A"/><rect x="6" y="28" width="88" height="18" rx="5" fill="#111111"/><rect x="44" y="28" width="12" height="64" fill="#E2B23A"/><path d="M50 28c-10-20-30-14-22 0M50 28c10-20 30-14 22 0" fill="none" stroke="#E2B23A" stroke-width="6" stroke-linecap="round"/></svg>
       </div>
 
+      <div class="hero__photos" aria-hidden="true">
+        <figure class="polaroid polaroid--1" data-depth="0.5" data-rot="6"><img src="/photos/hero-1.webp" alt="" /><figcaption>Солнышко пришло!</figcaption></figure>
+        <figure class="polaroid polaroid--2" data-depth="0.8" data-rot="-8"><img src="/photos/hero-2.webp" alt="" /><figcaption>Ростовые куклы</figcaption></figure>
+        <figure class="polaroid polaroid--3" data-depth="0.3" data-rot="-3"><img src="/photos/hero-3.webp" alt="" /><figcaption>Квест «Под замком»</figcaption></figure>
+      </div>
+
       <div class="hero__inner">
-        <p class="hero__eyebrow"><span class="dot"></span> Великий Новгород · праздники под ключ</p>
+        <p class="hero__eyebrow"><span class="dot"></span> Великий Новгород · организация праздников</p>
         <h1 class="hero__title">
           <span class="line">Праздник,</span>
           <span class="line">который&nbsp;<span class="rotator" aria-live="polite"><span class="rotator__word">дети</span></span></span>
-          <span class="line">вспоминают весь год</span>
+          <span class="line">вспоминают</span>
+          <span class="line">весь год</span>
         </h1>
-        <p class="hero__lead">Аниматоры, квесты, своя площадка и сюрпризы — всё в одной команде. Вы выбираете, мы делаем «вау».</p>
+        <p class="hero__lead">Дни рождения, квесты, выпускные, новогодние ёлки и ростовые куклы. Свои площадки и авторские программы — вы выбираете, мы делаем «вау».</p>
         <div class="hero__cta">
           <a href="#builder" class="btn magnetic"><span>Собрать праздник за 2 минуты</span></a>
           <a href="#programs" class="btn btn--ghost magnetic"><span>Смотреть программы</span></a>
         </div>
         <ul class="hero__badges">
-          <li><b>15 мин</b> отвечаем на заявку</li>
-          <li><b>4 в 1</b> аниматоры, квесты, лофт, сюрпризы</li>
-          <li><b>0 ₽</b> выезд по городу</li>
+          <li><b>14+ лет</b> делаем праздники</li>
+          <li><b>3 площадки</b> Loft Z, «Под замком», клуб MAX</li>
+          <li><b>20+</b> авторских квестов</li>
         </ul>
       </div>
       <a href="#directions" class="hero__scroll" aria-label="Листать вниз"><span></span></a>
@@ -80,7 +87,7 @@
     <!-- Бегущая строка -->
     <div class="marquee" aria-hidden="true">
       <div class="marquee__track">
-        <span>Дни рождения</span><i>✦</i><span>Квест-анимации</span><i>✦</i><span>Loft Z</span><i>✦</i><span>Шоу пузырей</span><i>✦</i><span>Выпускные</span><i>✦</i><span>Сюрпризы с шарами</span><i>✦</i><span>Квест-зона</span><i>✦</i>
+        <span>Дни рождения</span><i>✦</i><span>Квесты 8+</span><i>✦</i><span>Loft Z</span><i>✦</i><span>Новогодние ёлки</span><i>✦</i><span>Выпускные</span><i>✦</i><span>Ростовые куклы</span><i>✦</i><span>«Под замком»</span><i>✦</i>
       </div>
     </div>
 
@@ -99,13 +106,13 @@
     <section class="programs" id="programs">
       <div class="container">
         <p class="eyebrow">Каталог</p>
-        <h2 class="title split">Программы <em>под любой возраст</em></h2>
-        <div class="chips" role="tablist" aria-label="Фильтр по возрасту" data-filters>
-          <button class="chip is-active" data-age="all">Все</button>
-          <button class="chip" data-age="3">3–5 лет</button>
-          <button class="chip" data-age="6">6–9 лет</button>
-          <button class="chip" data-age="10">10–14 лет</button>
-          <button class="chip" data-age="14">Подростки</button>
+        <h2 class="title split">Квесты и программы <em>под любой возраст</em></h2>
+        <div class="chips" aria-label="Фильтр программ" data-filters>
+          <button class="chip is-active" data-group="all">Все</button>
+          <button class="chip" data-group="kids">Малышам 4–7</button>
+          <button class="chip" data-group="teen">Квесты 8+</button>
+          <button class="chip" data-group="adult">Для взрослых</button>
+          <button class="chip" data-group="surprise">Сюрпризы</button>
         </div>
         <div class="programs__grid" data-programs></div>
       </div>
@@ -117,7 +124,7 @@
         <div class="builder__intro">
           <p class="eyebrow">Конструктор праздника</p>
           <h2 class="title split">Соберите праздник — <em>узнайте цену сразу</em></h2>
-          <p class="muted">Предварительный расчёт. Точную стоимость менеджер подтвердит после уточнения деталей.</p>
+          <p class="muted">Цены из нашего прайса. Точную стоимость менеджер подтвердит после уточнения деталей.</p>
         </div>
 
         <form class="builder__form" data-builder novalidate>
@@ -126,23 +133,23 @@
             <div class="options" data-occasions></div>
           </fieldset>
           <fieldset>
-            <legend><span>02</span> Возраст и гости</legend>
+            <legend><span>02</span> Формат</legend>
+            <div class="options" data-formats></div>
+          </fieldset>
+          <fieldset>
+            <legend><span>03</span> Возраст и гости</legend>
             <div class="range">
               <label>Возраст именинника: <b data-age-out>7</b> лет</label>
               <input type="range" min="2" max="16" value="7" data-age-in />
             </div>
             <div class="range">
               <label>Гостей: <b data-guests-out>10</b></label>
-              <input type="range" min="2" max="30" value="10" data-guests-in />
+              <input type="range" min="1" max="40" value="10" data-guests-in />
             </div>
           </fieldset>
-          <fieldset>
-            <legend><span>03</span> Программа</legend>
+          <fieldset data-program-step>
+            <legend><span>04</span> Программа</legend>
             <div class="options options--programs" data-program-select></div>
-          </fieldset>
-          <fieldset>
-            <legend><span>04</span> Где празднуем</legend>
-            <div class="options" data-places></div>
           </fieldset>
           <fieldset>
             <legend><span>05</span> Добавить «вау»</legend>
@@ -159,7 +166,7 @@
               <strong><span data-total>0</span> ₽</strong>
             </div>
             <button class="btn btn--full magnetic" data-open-lead><span>Забронировать дату</span></button>
-            <p class="summary__note">Без предоплаты на этом шаге</p>
+            <p class="summary__note">Это ни к чему не обязывает — просто перезвоним</p>
           </div>
         </aside>
       </div>
@@ -182,13 +189,13 @@
       <div class="container stats__grid" data-stats></div>
     </section>
 
-    <!-- Отзывы -->
-    <section class="reviews" id="reviews">
+    <!-- Галерея -->
+    <section class="gallery" id="gallery">
       <div class="container">
-        <p class="eyebrow">Отзывы</p>
-        <h2 class="title split">Родители <em>говорят</em></h2>
+        <p class="eyebrow">Фото с праздников</p>
+        <h2 class="title split">Так это <em>выглядит</em></h2>
       </div>
-      <div class="reviews__rail" data-reviews></div>
+      <div class="gallery__rail" data-gallery></div>
     </section>
 
     <!-- FAQ -->
@@ -197,7 +204,7 @@
         <div>
           <p class="eyebrow">Вопросы</p>
           <h2 class="title split">Частые <em>вопросы</em></h2>
-          <p class="muted">Не нашли ответ? Напишите нам — ответим за 15 минут.</p>
+          <p class="muted">Не нашли ответ? Позвоните или напишите нам в ВК.</p>
           <a class="btn btn--ghost magnetic" data-vk-write target="_blank" rel="noopener"><span>Написать в ВК</span></a>
         </div>
         <div class="faq__list" data-faq></div>
@@ -215,8 +222,8 @@
           <a class="btn btn--ghost-light magnetic" data-phone><span></span></a>
         </div>
         <div class="contacts">
-          <div><span>Адрес</span><b data-address></b></div>
-          <div><span>Режим</span><b data-hours></b></div>
+          <div><span>Площадки</span><div data-venues></div></div>
+          <div><span>Менеджеры</span><div data-managers></div><small data-hours></small></div>
           <div class="contacts__vk" data-vk-links></div>
         </div>
       </div>
@@ -250,7 +257,7 @@
       <div class="modal__done" hidden>
         <div class="done-check"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24" fill="none"/><path d="M14 27l8 8 16-17" fill="none"/></svg></div>
         <h3>Заявка у нас!</h3>
-        <p class="muted">Перезвоним в течение 15 минут в рабочее время.</p>
+        <p class="muted">Скоро перезвоним и всё расскажем.</p>
       </div>
     </div>
   </div>
