@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Затейники — детские праздники в Великом Новгороде</title>
+  <meta name="description" content="Аниматоры, квесты, площадка Loft Z и сюрпризы на праздник в Великом Новгороде. Соберите праздник за 2 минуты." />
+  <meta property="og:title" content="Затейники — праздник под ключ" />
+  <meta property="og:description" content="Аниматоры, квест-зона, Loft Z и сюрпризы. Великий Новгород." />
+  <meta name="theme-color" content="#14112B" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- Прелоадер -->
+  <div class="preloader" aria-hidden="true">
+    <div class="preloader__word"></div>
+    <div class="preloader__count">0</div>
+    <div class="preloader__panel preloader__panel--1"></div>
+    <div class="preloader__panel preloader__panel--2"></div>
+  </div>
+
+  <div class="progress" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><span></span></div>
+
+  <header class="header">
+    <a href="#top" class="logo" aria-label="Затейники — на главную">
+      <svg viewBox="0 0 64 64" width="38" height="38" aria-hidden="true"><rect width="64" height="64" rx="18" fill="#FF5A3C"/><path d="M18 20h28L22 44h24" fill="none" stroke="#FFF6E9" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="16" r="5" fill="#FFC531"/></svg>
+      <span>Затейники</span>
+    </a>
+    <nav class="nav" aria-label="Основное меню">
+      <a href="#directions">Направления</a>
+      <a href="#programs">Программы</a>
+      <a href="#builder">Конструктор</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <a class="header__phone" data-phone></a>
+    <a href="#builder" class="btn btn--small magnetic"><span>Собрать праздник</span></a>
+    <button class="burger" aria-label="Меню" aria-expanded="false"><span></span><span></span></button>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero__shapes" aria-hidden="true">
+        <svg class="shape shape--balloon" data-depth="0.6" viewBox="0 0 100 160"><ellipse cx="50" cy="55" rx="42" ry="52" fill="#FF5A3C"/><ellipse cx="34" cy="36" rx="9" ry="14" fill="#fff" opacity=".35"/><path d="M46 106l4 6 4-6z" fill="#FF5A3C"/><path d="M50 112c-6 14 8 22 0 46" stroke="#14112B" stroke-width="2" fill="none"/></svg>
+        <svg class="shape shape--balloon2" data-depth="0.9" viewBox="0 0 100 160"><ellipse cx="50" cy="55" rx="42" ry="52" fill="#7B5CFF"/><ellipse cx="34" cy="36" rx="9" ry="14" fill="#fff" opacity=".35"/><path d="M46 106l4 6 4-6z" fill="#7B5CFF"/><path d="M50 112c6 14-8 22 0 46" stroke="#14112B" stroke-width="2" fill="none"/></svg>
+        <svg class="shape shape--star" data-depth="1.2" viewBox="0 0 100 100"><path d="M50 4l13 30 33 3-25 22 8 33-29-17-29 17 8-33L4 37l33-3z" fill="#FFC531"/></svg>
+        <svg class="shape shape--ring" data-depth="0.4" viewBox="0 0 100 100"><circle cx="50" cy="50" r="36" fill="none" stroke="#2ED3A4" stroke-width="14"/></svg>
+        <svg class="shape shape--zig" data-depth="1" viewBox="0 0 160 40"><path d="M5 30L25 10l20 20 20-20 20 20 20-20 20 20 20-20" fill="none" stroke="#FF5A3C" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="shape shape--blob" data-depth="0.3" viewBox="0 0 200 200"><path d="M44 -58C57 -47 67 -32 70 -15 74 2 71 21 62 37 52 53 36 66 17 72-2 78-23 77-40 68-57 59-70 42-75 23-80 4-77-17-67-34-57-51-39-63-21-71-3-79 14-82 31-71 42-62 31-69 44-58Z" transform="translate(100 100)" fill="#FFC531"/></svg>
+        <svg class="shape shape--gift" data-depth="0.8" viewBox="0 0 100 100"><rect x="12" y="40" width="76" height="52" rx="6" fill="#2ED3A4"/><rect x="6" y="28" width="88" height="18" rx="5" fill="#14112B"/><rect x="44" y="28" width="12" height="64" fill="#FFC531"/><path d="M50 28c-10-20-30-14-22 0M50 28c10-20 30-14 22 0" fill="none" stroke="#FFC531" stroke-width="6" stroke-linecap="round"/></svg>
+      </div>
+
+      <div class="hero__inner">
+        <p class="hero__eyebrow"><span class="dot"></span> Великий Новгород · праздники под ключ</p>
+        <h1 class="hero__title">
+          <span class="line">Праздник,</span>
+          <span class="line">который&nbsp;<span class="rotator" aria-live="polite"><span class="rotator__word">дети</span></span></span>
+          <span class="line">вспоминают весь год</span>
+        </h1>
+        <p class="hero__lead">Аниматоры, квесты, своя площадка и сюрпризы — всё в одной команде. Вы выбираете, мы делаем «вау».</p>
+        <div class="hero__cta">
+          <a href="#builder" class="btn magnetic"><span>Собрать праздник за 2 минуты</span></a>
+          <a href="#programs" class="btn btn--ghost magnetic"><span>Смотреть программы</span></a>
+        </div>
+        <ul class="hero__badges">
+          <li><b>15 мин</b> отвечаем на заявку</li>
+          <li><b>4 в 1</b> аниматоры, квесты, лофт, сюрпризы</li>
+          <li><b>0 ₽</b> выезд по городу</li>
+        </ul>
+      </div>
+      <a href="#directions" class="hero__scroll" aria-label="Листать вниз"><span></span></a>
+    </section>
+
+    <!-- Бегущая строка -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Дни рождения</span><i>✦</i><span>Квест-анимации</span><i>✦</i><span>Loft Z</span><i>✦</i><span>Шоу пузырей</span><i>✦</i><span>Выпускные</span><i>✦</i><span>Сюрпризы с шарами</span><i>✦</i><span>Квест-зона</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- Направления: горизонтальный скролл -->
+    <section class="directions" id="directions">
+      <div class="directions__pin">
+        <div class="directions__head">
+          <p class="eyebrow">Четыре направления — одна команда</p>
+          <h2 class="title split">Всё для праздника <em>в одних руках</em></h2>
+        </div>
+        <div class="directions__track" data-directions></div>
+      </div>
+    </section>
+
+    <!-- Программы -->
+    <section class="programs" id="programs">
+      <div class="container">
+        <p class="eyebrow">Каталог</p>
+        <h2 class="title split">Программы <em>под любой возраст</em></h2>
+        <div class="chips" role="tablist" aria-label="Фильтр по возрасту" data-filters>
+          <button class="chip is-active" data-age="all">Все</button>
+          <button class="chip" data-age="3">3–5 лет</button>
+          <button class="chip" data-age="6">6–9 лет</button>
+          <button class="chip" data-age="10">10–14 лет</button>
+          <button class="chip" data-age="14">Подростки</button>
+        </div>
+        <div class="programs__grid" data-programs></div>
+      </div>
+    </section>
+
+    <!-- Конструктор -->
+    <section class="builder" id="builder">
+      <div class="container builder__wrap">
+        <div class="builder__intro">
+          <p class="eyebrow">Конструктор праздника</p>
+          <h2 class="title split">Соберите праздник — <em>узнайте цену сразу</em></h2>
+          <p class="muted">Предварительный расчёт. Точную стоимость менеджер подтвердит после уточнения деталей.</p>
+        </div>
+
+        <form class="builder__form" data-builder novalidate>
+          <fieldset>
+            <legend><span>01</span> Повод</legend>
+            <div class="options" data-occasions></div>
+          </fieldset>
+          <fieldset>
+            <legend><span>02</span> Возраст и гости</legend>
+            <div class="range">
+              <label>Возраст именинника: <b data-age-out>7</b> лет</label>
+              <input type="range" min="2" max="16" value="7" data-age-in />
+            </div>
+            <div class="range">
+              <label>Гостей: <b data-guests-out>10</b></label>
+              <input type="range" min="2" max="30" value="10" data-guests-in />
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend><span>03</span> Программа</legend>
+            <div class="options options--programs" data-program-select></div>
+          </fieldset>
+          <fieldset>
+            <legend><span>04</span> Где празднуем</legend>
+            <div class="options" data-places></div>
+          </fieldset>
+          <fieldset>
+            <legend><span>05</span> Добавить «вау»</legend>
+            <div class="options options--extras" data-extras></div>
+          </fieldset>
+        </form>
+
+        <aside class="summary" aria-live="polite">
+          <div class="summary__card">
+            <p class="summary__label">Ваш праздник</p>
+            <ul class="summary__list" data-summary></ul>
+            <div class="summary__total">
+              <span>Итого от</span>
+              <strong><span data-total>0</span> ₽</strong>
+            </div>
+            <button class="btn btn--full magnetic" data-open-lead><span>Забронировать дату</span></button>
+            <p class="summary__note">Без предоплаты на этом шаге</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Как это работает -->
+    <section class="how">
+      <div class="container">
+        <p class="eyebrow">Как это работает</p>
+        <h2 class="title split">От заявки до праздника — <em>4 шага</em></h2>
+        <div class="how__steps">
+          <svg class="how__line" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><path d="M10 60 C 160 -10, 300 130, 500 60 S 840 -10, 990 60" fill="none" stroke="#FF5A3C" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 0"/></svg>
+          <ol data-steps></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Цифры -->
+    <section class="stats">
+      <div class="container stats__grid" data-stats></div>
+    </section>
+
+    <!-- Отзывы -->
+    <section class="reviews" id="reviews">
+      <div class="container">
+        <p class="eyebrow">Отзывы</p>
+        <h2 class="title split">Родители <em>говорят</em></h2>
+      </div>
+      <div class="reviews__rail" data-reviews></div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq">
+      <div class="container faq__wrap">
+        <div>
+          <p class="eyebrow">Вопросы</p>
+          <h2 class="title split">Частые <em>вопросы</em></h2>
+          <p class="muted">Не нашли ответ? Напишите нам — ответим за 15 минут.</p>
+          <a class="btn btn--ghost magnetic" data-vk-write target="_blank" rel="noopener"><span>Написать в ВК</span></a>
+        </div>
+        <div class="faq__list" data-faq></div>
+      </div>
+    </section>
+
+    <!-- Финальный CTA -->
+    <section class="final" id="contacts">
+      <div class="final__confetti" aria-hidden="true"></div>
+      <div class="container final__inner">
+        <h2 class="final__title split">Давайте устроим <em>праздник</em></h2>
+        <p class="final__lead">Оставьте номер — перезвоним, подберём программу и забронируем дату.</p>
+        <div class="hero__cta">
+          <button class="btn btn--light magnetic" data-open-lead><span>Оставить заявку</span></button>
+          <a class="btn btn--ghost-light magnetic" data-phone><span></span></a>
+        </div>
+        <div class="contacts">
+          <div><span>Адрес</span><b data-address></b></div>
+          <div><span>Режим</span><b data-hours></b></div>
+          <div class="contacts__vk" data-vk-links></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© <span data-year></span> Затейники · Великий Новгород</span>
+      <a href="#top">Наверх ↑</a>
+    </div>
+  </footer>
+
+  <!-- Модалка заявки -->
+  <div class="modal" data-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="lead-title">
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__box">
+      <button class="modal__close" data-close aria-label="Закрыть">×</button>
+      <div class="modal__form-view">
+        <h3 id="lead-title">Бронируем дату</h3>
+        <p class="muted" data-lead-summary></p>
+        <form class="lead" data-lead>
+          <label>Имя<input name="name" required autocomplete="given-name" placeholder="Как к вам обращаться" /></label>
+          <label>Телефон<input name="phone" required type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" /></label>
+          <label>Дата праздника<input name="date" type="date" /></label>
+          <label class="lead__agree"><input type="checkbox" required checked /> Согласен на обработку персональных данных</label>
+          <button class="btn btn--full" type="submit"><span>Отправить заявку</span></button>
+          <p class="lead__error" data-lead-error hidden></p>
+        </form>
+      </div>
+      <div class="modal__done" hidden>
+        <div class="done-check"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24" fill="none"/><path d="M14 27l8 8 16-17" fill="none"/></svg></div>
+        <h3>Заявка у нас!</h3>
+        <p class="muted">Перезвоним в течение 15 минут в рабочее время.</p>
+      </div>
+    </div>
+  </div>
+
+  <canvas class="confetti" aria-hidden="true"></canvas>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
