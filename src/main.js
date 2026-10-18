@@ -2,6 +2,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 import Lenis from 'lenis'
+import { icon } from './icons.js'
 import { brand, directions, moreLinks, venues, programs, calc, steps, stats, gallery, faq } from './data.js'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
@@ -32,18 +33,12 @@ const revealFrom = (el, vars, offset, targets = el) => {
    1. Рендер контента из data.js
    ========================================================= */
 
-const icons = {
-  mask: '<svg viewBox="0 0 100 100" class="dir-card__icon"><path d="M10 30c25-10 55-10 80 0 0 30-12 52-40 58C22 82 10 60 10 30z" fill="#111111"/><circle cx="35" cy="45" r="8" fill="#FFF6E9"/><circle cx="65" cy="45" r="8" fill="#FFF6E9"/><path d="M36 64c8 8 20 8 28 0" stroke="#FFF6E9" stroke-width="5" fill="none" stroke-linecap="round"/></svg>',
-  house: '<svg viewBox="0 0 100 100" class="dir-card__icon"><path d="M12 48L50 14l38 34v38H12z" fill="#FFF6E9"/><rect x="40" y="58" width="20" height="28" rx="3" fill="#111111"/><circle cx="50" cy="38" r="7" fill="#E2B23A"/></svg>',
-  key: '<svg viewBox="0 0 100 100" class="dir-card__icon"><circle cx="34" cy="50" r="22" fill="none" stroke="#111111" stroke-width="10"/><path d="M54 50h36M76 50v14M88 50v10" stroke="#111111" stroke-width="10" stroke-linecap="round"/></svg>',
-  gift: '<svg viewBox="0 0 100 100" class="dir-card__icon"><rect x="14" y="42" width="72" height="46" rx="6" fill="#FF6A00"/><rect x="8" y="30" width="84" height="16" rx="5" fill="#111111"/><rect x="44" y="30" width="12" height="58" fill="#FFF6E9"/><path d="M50 30c-10-20-30-14-22 0M50 30c10-20 30-14 22 0" fill="none" stroke="#111111" stroke-width="6" stroke-linecap="round"/></svg>',
-}
 
 function renderDirections() {
   $('[data-directions]').innerHTML = directions.map((d, i) => `
     <article class="dir-card" data-color="${d.color}">
       <span class="dir-card__bg"></span>
-      <div class="dir-card__photo"><img src="${d.photo}" alt="${d.title}" loading="lazy" />${icons[d.icon]}</div>
+      <div class="dir-card__photo"><img src="${d.photo}" alt="${d.title}" loading="lazy" />${icon(d.icon, 'dir-card__icon')}</div>
       <span class="dir-card__tag">${d.tag}</span>
       <h3>${d.title}</h3>
       <p>${d.text}</p>
@@ -57,7 +52,7 @@ const ageLabel = (p) => (p.group === 'adult' ? '18+' : p.group === 'surprise' ? 
 function renderPrograms() {
   $('[data-programs]').innerHTML = programs.map((p, i) => `
     <article class="prog" data-color="${p.color}" data-group="${p.group}">
-      <div class="prog__emoji" aria-hidden="true">${p.emoji}</div>
+      <div class="prog__icon">${icon(p.icon)}</div>
       <span class="prog__kind">${p.kind} · ${venues[p.venue]}</span>
       <h3>${p.title}</h3>
       <p>${p.text}</p>
@@ -215,16 +210,40 @@ function runPreloader() {
 
 function heroRotator() {
   const words = ['дети', 'мамы', 'гости', 'все']
-  const el = $('.rotator__word')
+  const box = $('.rotator')
+  let current = $('.rotator__word')
   let i = 0
   if (reduced) return
+  const letters = (w) => [...w].map((c) => `<span class="rc">${c}</span>`).join('')
+
+  // Смена слова «прокруткой»: старые буквы уезжают вверх, новые въезжают снизу.
+  // .rotator обрезает всё лишнее (overflow: hidden), поэтому слово не исчезает, а прокручивается.
   gsap.delayedCall(2.6, function next() {
     i = (i + 1) % words.length
-    gsap.timeline()
-      .to(el, { yPercent: -100, opacity: 0, rotateX: 60, duration: 0.4, ease: 'power3.in' })
-      .add(() => (el.textContent = words[i]))
-      .fromTo(el, { yPercent: 100, opacity: 0, rotateX: -60 }, { yPercent: 0, opacity: 1, rotateX: 0, duration: 0.6, ease: 'back.out(2)' })
-    gsap.delayedCall(2.6, next)
+    const incoming = document.createElement('span')
+    incoming.className = 'rotator__word is-next'
+    incoming.innerHTML = letters(words[i])
+    box.appendChild(incoming)
+
+    const from = box.offsetWidth
+    const to = incoming.offsetWidth
+    const old = current
+    current = incoming
+    const oldLetters = old.querySelectorAll('.char, .rc')
+    const inAt = 0.22 + 0.03 * (oldLetters.length - 1)
+
+    gsap.timeline({
+      onComplete() {
+        old.remove()
+        incoming.classList.remove('is-next')
+        gsap.set(box, { clearProps: 'width' })
+      },
+    })
+      // старое слово уезжает вверх; новое въезжает снизу, когда последняя буква старого почти ушла
+      .to(oldLetters, { yPercent: -120, duration: 0.32, stagger: 0.03, ease: 'power2.in' })
+      .fromTo(box, { width: from }, { width: to, duration: 0.5, ease: 'power3.inOut' }, 0.15)
+      .fromTo(incoming.children, { yPercent: 120 }, { yPercent: 0, duration: 0.55, stagger: 0.04, ease: 'back.out(1.7)' }, inAt)
+    gsap.delayedCall(2.8, next)
   })
 }
 
@@ -447,7 +466,7 @@ function renderProgramOptions() {
   const age = +$('[data-age-in]').value
   const keep = list.find(({ i }) => i === pickedProgram) || list.find(({ p }) => age >= p.age[0] && age <= p.age[1]) || list[0]
   $('[data-program-select]').innerHTML = list
-    .map(({ p, i }) => opt('radio', 'program', `prog-${i}`, `${p.emoji} ${p.title}`, `${ageLabel(p)} · ${rub(p.price)} ₽`, i === keep.i))
+    .map(({ p, i }) => opt('radio', 'program', `prog-${i}`, `<span class="opt__title">${icon(p.icon, 'opt__icon')}${p.title}</span>`, `${ageLabel(p)} · ${rub(p.price)} ₽`, i === keep.i))
     .join('')
 }
 
