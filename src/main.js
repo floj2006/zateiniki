@@ -1,17 +1,32 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
-import { Flip } from 'gsap/Flip'
 import Lenis from 'lenis'
 import { brand, directions, moreLinks, venues, programs, calc, steps, stats, gallery, faq } from './data.js'
 
-gsap.registerPlugin(ScrollTrigger, SplitText, Flip)
+gsap.registerPlugin(ScrollTrigger, SplitText)
 
 const $ = (s, root = document) => root.querySelector(s)
 const $$ = (s, root = document) => [...root.querySelectorAll(s)]
 const rub = (n) => Math.round(n).toLocaleString('ru-RU')
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
+// Разовое появление при прокрутке. IntersectionObserver вместо ScrollTrigger:
+// его не нужно пересчитывать, когда меняется высота страницы (например, при фильтре).
+// offset — какая доля экрана снизу должна остаться, когда элемент «появился».
+function onReveal(el, play, offset = 0.15) {
+  const io = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return
+    io.disconnect()
+    play()
+  }, { rootMargin: `0px 0px -${offset * 100}% 0px` })
+  io.observe(el)
+}
+const revealFrom = (el, vars, offset, targets = el) => {
+  const tween = gsap.from(targets, { ...vars, paused: true })
+  onReveal(el, () => tween.play(), offset)
+}
 
 /* =========================================================
    1. Рендер контента из data.js
@@ -29,7 +44,6 @@ function renderDirections() {
     <article class="dir-card" data-color="${d.color}">
       <span class="dir-card__bg"></span>
       <div class="dir-card__photo"><img src="${d.photo}" alt="${d.title}" loading="lazy" />${icons[d.icon]}</div>
-      <span class="dir-card__num">0${i + 1} / 0${directions.length}</span>
       <span class="dir-card__tag">${d.tag}</span>
       <h3>${d.title}</h3>
       <p>${d.text}</p>
@@ -78,7 +92,7 @@ function renderStatic() {
 
   // фото дублируем, чтобы лента была бесконечной
   const card = (g) => `
-    <figure class="shot"><img src="${g.src}" alt="${g.caption}" loading="lazy" draggable="false" /><figcaption>${g.caption}</figcaption></figure>`
+    <figure class="shot"><img src="${g.src}" alt="${g.caption}" loading="lazy" draggable="false" /></figure>`
   $('[data-gallery]').innerHTML = [...gallery, ...gallery].map(card).join('')
 
   $('[data-faq]').innerHTML = faq.map((f, i) => `
@@ -277,14 +291,11 @@ function titles() {
   $$('.split').forEach((el) => {
     const split = new SplitText(el, { type: 'lines,words', linesClass: 'split-line' })
     if (reduced) return
-    gsap.from(split.words, {
-      yPercent: 110, rotate: 4, duration: 1, stagger: 0.05, ease: 'expo.out',
-      scrollTrigger: { trigger: el, start: 'top 85%' },
-    })
+    revealFrom(el, { yPercent: 110, rotate: 4, duration: 1, stagger: 0.05, ease: 'expo.out' }, 0.15, split.words)
   })
   if (reduced) return
-  $$('.eyebrow, .muted').forEach((el) => {
-    gsap.from(el, { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%' } })
+  $$('main .eyebrow, main .muted').forEach((el) => {
+    revealFrom(el, { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' }, 0.1)
   })
 }
 
@@ -318,38 +329,51 @@ function directionsScroll() {
   })
   mm.add('(max-width: 760px) and (prefers-reduced-motion: no-preference)', () => {
     $$('.dir-card').forEach((card) => {
-      gsap.from(card, { y: 60, opacity: 0, duration: 0.9, ease: 'power3.out', scrollTrigger: { trigger: card, start: 'top 88%' } })
+      revealFrom(card, { y: 60, opacity: 0, duration: 0.9, ease: 'power3.out' }, 0.12)
     })
   })
 }
 
 /* =========================================================
-   9. Программы — фильтр (Flip), 3D-наклон, «Выбрать»
+   9. Программы — фильтр, 3D-наклон, «Выбрать»
    ========================================================= */
 
 function programsBlock() {
   const cards = $$('.prog')
   if (!reduced) {
-    ScrollTrigger.batch(cards, {
-      start: 'top 90%',
-      onEnter: (batch) => gsap.from(batch, { y: 80, opacity: 0, rotate: 3, duration: 0.9, stagger: 0.08, ease: 'power3.out' }),
-      once: true,
-    })
+    // карточки, появившиеся одновременно, анимируем «пачкой» с задержкой
+    gsap.set(cards, { y: 80, opacity: 0, rotate: 3 })
+    const io = new IntersectionObserver((entries) => {
+      const batch = entries.filter((e) => e.isIntersecting).map((e) => e.target)
+      if (!batch.length) return
+      batch.forEach((c) => io.unobserve(c))
+      gsap.to(batch, { y: 0, opacity: 1, rotate: 0, duration: 0.9, stagger: 0.08, ease: 'power3.out' })
+    }, { rootMargin: '0px 0px -10% 0px' })
+    cards.forEach((c) => io.observe(c))
   }
 
+  // Фильтр: только opacity/transform — это дёшево для браузера.
+  // Пересчёт ScrollTrigger (высота страницы поменялась) — один раз, после анимации и в простой.
+  const grid = $('[data-programs]')
+  let refreshTimer = null
   $('[data-filters]').addEventListener('click', (e) => {
     const chip = e.target.closest('.chip')
-    if (!chip) return
+    if (!chip || chip.classList.contains('is-active')) return
     $$('.chip').forEach((c) => c.classList.toggle('is-active', c === chip))
     const group = chip.dataset.group
-    const state = Flip.getState(cards)
-    cards.forEach((c) => c.classList.toggle('is-hidden', group !== 'all' && c.dataset.group !== group))
-    Flip.from(state, {
-      duration: reduced ? 0 : 0.6, ease: 'power3.inOut', stagger: 0.03, absolute: true,
-      onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.5 }),
-      onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.85, duration: 0.4 }),
-    })
-    ScrollTrigger.refresh()
+    const apply = () => {
+      cards.forEach((c) => c.classList.toggle('is-hidden', group !== 'all' && c.dataset.group !== group))
+      const shown = cards.filter((c) => !c.classList.contains('is-hidden'))
+      gsap.fromTo(grid, { opacity: 0 }, { opacity: 1, duration: 0.2, overwrite: true })
+      gsap.fromTo(shown.slice(0, 12), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, stagger: 0.025, ease: 'power3.out', overwrite: true, clearProps: 'opacity' })
+      clearTimeout(refreshTimer)
+      refreshTimer = setTimeout(() => {
+        const run = () => ScrollTrigger.refresh()
+        'requestIdleCallback' in window ? requestIdleCallback(run, { timeout: 1000 }) : run()
+      }, 600)
+    }
+    if (reduced) return apply()
+    gsap.to(grid, { opacity: 0, y: 0, duration: 0.15, ease: 'power1.in', overwrite: true, onComplete: apply })
   })
 
   // 3D-наклон карточек
@@ -519,14 +543,9 @@ function howLine() {
   gsap.set(path, { strokeDasharray: len, strokeDashoffset: reduced ? 0 : len })
   if (reduced) return
   gsap.to(path, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: '.how__steps', start: 'top 80%', end: 'bottom 60%', scrub: true } })
-  gsap.from('.how li', {
-    y: 50, opacity: 0, duration: 0.8, stagger: 0.15, ease: 'back.out(1.6)',
-    scrollTrigger: { trigger: '.how__steps', start: 'top 80%' },
-  })
-  gsap.from('.how__num', {
-    scale: 0, rotate: -90, duration: 0.8, stagger: 0.15, ease: 'back.out(2.5)',
-    scrollTrigger: { trigger: '.how__steps', start: 'top 80%' },
-  })
+  const steps = $('.how__steps')
+  revealFrom(steps, { y: 50, opacity: 0, duration: 0.8, stagger: 0.15, ease: 'back.out(1.6)' }, 0.2, '.how li')
+  revealFrom(steps, { scale: 0, rotate: -90, duration: 0.8, stagger: 0.15, ease: 'back.out(2.5)' }, 0.2, '.how__num')
 }
 
 function counters() {
@@ -535,11 +554,10 @@ function counters() {
     const suffix = el.dataset.suffix
     if (reduced) { el.textContent = rub(end) + suffix; return }
     const o = { v: 0 }
-    gsap.to(o, {
+    onReveal(el, () => gsap.to(o, {
       v: end, duration: 2, ease: 'power3.out',
-      scrollTrigger: { trigger: el, start: 'top 90%', once: true },
       onUpdate: () => (el.textContent = rub(o.v) + suffix),
-    })
+    }), 0.1)
   })
 }
 
@@ -605,10 +623,7 @@ function finalBlock() {
     }
   }
   if (reduced) return
-  gsap.from(box.children, {
-    yPercent: -400, opacity: 0, stagger: 0.02, duration: 1.2, ease: 'bounce.out',
-    scrollTrigger: { trigger: '.final', start: 'top 70%' },
-  })
+  revealFrom($('.final'), { yPercent: -400, opacity: 0, stagger: 0.02, duration: 1.2, ease: 'bounce.out' }, 0.3, box.children)
   gsap.from('.final', { clipPath: 'inset(10% 6% 0 6% round 80px)', ease: 'none', scrollTrigger: { trigger: '.final', start: 'top bottom', end: 'top 30%', scrub: true } })
 }
 
@@ -618,12 +633,17 @@ function finalBlock() {
 
 function cursorAndMagnets() {
   if (!finePointer || reduced) return
+  // свой курсор вместо системного (системный скрыт через CSS-класс has-cursor)
+  document.documentElement.classList.add('has-cursor')
   const cursor = $('.cursor')
-  const cx = gsap.quickTo(cursor, 'x', { duration: 0.25, ease: 'power3' })
-  const cy = gsap.quickTo(cursor, 'y', { duration: 0.25, ease: 'power3' })
-  window.addEventListener('mousemove', (e) => { cx(e.clientX); cy(e.clientY) })
+  const cx = gsap.quickTo(cursor, 'x', { duration: 0.08, ease: 'power3' })
+  const cy = gsap.quickTo(cursor, 'y', { duration: 0.08, ease: 'power3' })
+  window.addEventListener('mousemove', (e) => { cx(e.clientX); cy(e.clientY); cursor.classList.remove('is-out') })
+  document.addEventListener('mouseleave', () => cursor.classList.add('is-out'))
+  window.addEventListener('mousedown', () => cursor.classList.add('is-down'))
+  window.addEventListener('mouseup', () => cursor.classList.remove('is-down'))
   document.addEventListener('mouseover', (e) => {
-    cursor.classList.toggle('is-hover', !!e.target.closest('a, button, label, input'))
+    cursor.classList.toggle('is-hover', !!e.target.closest('a, button, label, input, .gallery__rail'))
   })
 
   $$('.magnetic').forEach((el) => {
